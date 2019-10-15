@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.9.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.freefair.lombok' version '3.6.4'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.11'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    braintreeVersion = '2.104.0'
+    lombokVersion = '1.18.8'
+    swaggerVersion = '2.9.2'
+}
+
+dependencies {
+    
+    implementation group: 'com.braintreepayments.gateway', name: 'braintree-java', version: braintreeVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: swaggerVersion
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggerVersion
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
