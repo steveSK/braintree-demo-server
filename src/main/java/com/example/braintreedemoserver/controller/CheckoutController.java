@@ -1,14 +1,9 @@
 package com.example.braintreedemoserver.controller;
 
 
-import com.braintreegateway.BraintreeGateway;
-import com.braintreegateway.Result;
-import com.braintreegateway.Transaction;
-import com.braintreegateway.TransactionRequest;
+import com.braintreegateway.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,14 +24,29 @@ public class CheckoutController {
     @PostMapping("/checkout")
     public Result<Transaction> checkout(@RequestBody String paymentNonce) {
         log.info("Executing Transaction with nonce: " + paymentNonce);
-        TransactionRequest request = new TransactionRequest()
+        TransactionRequest paymentRequest = new TransactionRequest()
                 .amount(BigDecimal.TEN)
                 .paymentMethodNonce(paymentNonce)
                 .options()
                 .submitForSettlement(true)
                 .done();
 
-        return braintreeGateway.transaction().sale(request);
+        CustomerRequest request = new CustomerRequest()
+                .firstName("Test")
+                .lastName("User")
+                .paymentMethodNonce(paymentNonce);
+
+        Result<Customer> customerRes = braintreeGateway.customer().create(request);
+
+
+     /*   PaymentMethodRequest paymentMethodRequest = new PaymentMethodRequest()
+                .customerId("131866")
+                .paymentMethodNonce(paymentNonce);
+
+        Result<? extends PaymentMethod> paymentMethodResult = braintreeGateway.paymentMethod().
+                create(paymentMethodRequest); */
+
+        return braintreeGateway.transaction().sale(paymentRequest);
 
      /*   if (result.isSuccess()) {
             return ResponseEntity.status(HttpStatus.OK).build();
