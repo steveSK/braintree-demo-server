@@ -1,7 +1,10 @@
 package com.example.braintreedemoserver.controller;
 
 
-import com.braintreegateway.*;
+import com.braintreegateway.BraintreeGateway;
+import com.braintreegateway.Result;
+import com.braintreegateway.Transaction;
+import com.braintreegateway.TransactionRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +23,11 @@ public class CheckoutController {
     @Autowired
     private BraintreeGateway braintreeGateway;
 
+    private static String testSubsPlan = "monthly_subscriber";
+
 
     @PostMapping("/checkout")
-    public Result<Transaction> checkout(@RequestBody String paymentNonce) {
+    public Result checkout(@RequestBody String paymentNonce) {
         log.info("Executing Transaction with nonce: " + paymentNonce);
         TransactionRequest paymentRequest = new TransactionRequest()
                 .amount(BigDecimal.TEN)
@@ -31,28 +36,11 @@ public class CheckoutController {
                 .submitForSettlement(true)
                 .done();
 
-        CustomerRequest request = new CustomerRequest()
-                .firstName("Test")
-                .lastName("User")
-                .paymentMethodNonce(paymentNonce);
 
-        Result<Customer> customerRes = braintreeGateway.customer().create(request);
+        Result<Transaction> transRes = braintreeGateway.transaction().sale(paymentRequest);
+        log.info(transRes.getMessage());
 
-
-     /*   PaymentMethodRequest paymentMethodRequest = new PaymentMethodRequest()
-                .customerId("131866")
-                .paymentMethodNonce(paymentNonce);
-
-        Result<? extends PaymentMethod> paymentMethodResult = braintreeGateway.paymentMethod().
-                create(paymentMethodRequest); */
-
-        return braintreeGateway.transaction().sale(paymentRequest);
-
-     /*   if (result.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-        } */
+        return transRes;
     }
 
 }
