@@ -18,19 +18,18 @@ public class SubscriberController {
     private BraintreeGateway braintreeGateway;
 
 
-    private static String testSubsPlan = "monthly_subscriber";
+    private final static String testSubsPlan = "cenova_mapa_pro_year";
 
+    private final static String testUuid = "9fe5007f-9aa5-4401-9c67-c92c78ad8217";
 
     @PostMapping("/subscribe")
     public Result checkout(@RequestBody String paymentNonce) {
         log.info("Executing Subs Transaction with nonce: " + paymentNonce);
 
         CustomerRequest request = new CustomerRequest()
-                .firstName("Test")
-                .lastName("User")
                 .paymentMethodNonce(paymentNonce);
 
-        Result<Customer> customerRes = braintreeGateway.customer().create(request);
+        Result<Customer> customerRes = braintreeGateway.customer().update(testUuid, request);
         log.info("LOG: " + customerRes.getMessage());
 
         PaymentMethod paymentMethod = customerRes.getTarget().getDefaultPaymentMethod();
